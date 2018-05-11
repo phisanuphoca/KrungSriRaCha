@@ -1,0 +1,171 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use App\Box;
+use App\Saipure;
+use App\Movie;
+class BoxController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        //
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+       
+       session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }
+         $x=0;
+       
+        $User = Saipure::find($_SESSION["user"]->UserID);
+        
+        $Movie = Movie::find($request->input('p'));
+
+        $boxs = Box::where('UserID',$_SESSION["user"]->UserID)->get();
+        foreach ($boxs as $box){
+            if ($request->input('p') == $box->MovieID) {
+                $x=1;
+            }
+            
+        }
+        $boxs2 = new Box;
+        if ($User->Point >= $Movie->Price &&$x!=1 ) {
+           
+            $User->Point  -= $Movie->Price;
+            $User->save();
+            $boxs2->UserID = $User->UserID;
+            $boxs2->MovieID = $request->input('p');
+            $boxs2->save();
+            return redirect()->route('box.show',$User->UserID);
+        }else{
+            return redirect()->route('box.show',$User->UserID);
+        }
+        
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+       session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }
+        
+
+        
+        $boxs = Box::where('UserID',$id)->get();
+        
+        
+        $User = Saipure::find($id);
+        $MoviesBox=array();
+        foreach ($boxs as $box){
+
+            $Movie = Movie::find($box->MovieID);
+            array_push($MoviesBox,$Movie);
+        }
+
+        // print_r($MoviesBox);
+        return view('saipure.box')->with('MoviesBox',$MoviesBox)->with('User',$User);
+            
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+         session_start();
+         session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }
+         $x=0;
+        $aa = $_SESSION["user"]->Username;
+        $User = Saipure::find($aa);
+        
+        $Movie = Movie::find($request->input('p'));
+
+        $boxs = Box::where('UserID',$_SESSION["user"]->UserID)->get();
+        foreach ($boxs as $box){
+            if ($request->input('p') == $box->MovieID) {
+                $x=1;
+            }
+            
+        }
+        $boxs2 = new Box;
+        $boxs2->UserID = 15;
+        $boxs2->MovieID = $request->input('p');
+        if ($User->Point >= $Movie->Price &&$x!=1 ) {
+            echo "string";
+            $User->Point  -= $Movie->Price;
+            
+            // $boxs2->UserID = $id;
+            // $boxs2->MovieID = $request->input('p');
+        }
+        // return redirect()->route('box.show',$User->UserID);
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+}

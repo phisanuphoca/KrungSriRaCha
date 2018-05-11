@@ -1,0 +1,130 @@
+
+<?php 
+$status = session_status();
+if($status == PHP_SESSION_NONE){
+
+        session_start();
+        
+
+
+    }
+
+
+// $_SESSION["user"]=$User;; echo "USER : ".$_SESSION["user"]; echo "<br>"; echo "ถ้า SESSION สามารถทำงานได้ SESSION ID จะไม่เปลี่ยน :".session_id();
+ ?>
+
+
+<a href="{{ route('logout') }}"><< ออกจากระบบ</a>
+<br>
+<br>
+
+<div style="border:solid 1px #AAAAAA; height: 80px; width:400px; padding:10px;">
+{{$Tx}}
+<form action="{{ route('admin.store') }}" method="post" >
+
+	<input type="hidden" name="_token" value="{{ csrf_token() }}">
+	
+	<table border="1" style="width: 300px;display:inline-block">
+    <tbody>
+      <tr>
+        <td width="87"> &nbsp;ที่อยู่รูปภาพ</td>
+      <td width="197"><input maxlength="30" name="p" placeholder="movie/m_1.jpg"></td>
+        
+      </tr>
+      <tr>
+        <td> &nbsp;ราคา Point</td>
+        <td><input type="number" name="point" placeholder="100"></td>
+      </tr>
+      
+    </tbody>
+  </table>
+
+
+	
+	<button style="margin-left: 10px; top:100px;" type="submit">&nbsp;&nbsp;&nbsp;เพิ่ม&nbsp;&nbsp;&nbsp;</button>
+</form>
+</div>
+
+
+<br><br>
+
+
+
+<form action="" method="post" >
+
+  <input type="hidden" name="_token" value="{{ csrf_token() }}">
+  
+  <table border="1" style="width: 1000px;display:inline-block">
+    <tbody>
+      <tr>
+        <td width="50"> <center>ลำดับ </td>
+        <td width="50"> <center>UserID </td>
+        <td width="100"> <center>Username </td>
+        <td width="100"> <center>Password </td>
+        <td width="150"> <center>Name </td>
+        <td width="150"><center> email </td>
+        <td width="60"><center> Point </td>
+        <td width="70"> <center>Status </td>
+        <td width="70"><center> </td>
+        
+      </tr>
+      <?php $i=0;?>
+       @foreach($admins as $admin)
+        <?php $i++;?>
+
+
+       <tr>
+        <td width="50"> <center>{{$i}} </td>
+        <td > &nbsp;{{ $admin->UserID }}</td>
+        <td > &nbsp;{{ $admin->Username }}</td>
+        <td > &nbsp;{{ $admin->Password }}</td>
+        <td > &nbsp;{{ $admin->Name }}</td>
+        <td > &nbsp;{{ $admin->email }}</td>
+        <td style="max-height:15px; line-height:10px;" align=right > &nbsp;{{ $admin->Point }}&nbsp;</td>
+        <td > &nbsp;
+        <?php 
+        if ($admin->Status=='USER') {
+          echo '<as style="color : #0000FF;">'.$admin->Status.'</as>';
+        }elseif ($admin->Status=='ADMIN') {
+          if ($admin->Username=='admin') {
+            echo '<as style="color : #FF00FF;">'.$admin->Status.'</as>';
+          }else{
+            echo '<as style="color : #00FF00;">'.$admin->Status.'</as>';
+          }
+          
+        }else{
+          echo '<as style="color : #FF3333;">'.$admin->Status.'</as>';
+        } 
+        ?>
+
+
+
+        </td>
+        
+        <td >&nbsp;<a href="{{ route('admin.edit',$admin->UserID) }}">แก้ไข</a> </td>
+        
+        <form action="{{ route('admin.destroy',$admin->UserID) }}" method="post">
+        <input type="hidden" name="_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="_method" value="delete">
+        
+        <td width="50">
+          <?php if ( $admin->Username !="admin") {
+            echo '<button type="submit">ลบ</button>';
+        }
+        ?>
+
+        </td>
+        </form>
+        
+        
+
+
+      </tr>
+      @endforeach
+    </tbody>
+  </table>
+
+
+  
+  
+</form>

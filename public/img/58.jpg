@@ -1,0 +1,12 @@
+<?php
+
+namespace App;
+
+use Illuminate\Database\Eloquent\Model;
+
+class Box extends Model
+{
+    protected $table = 'box_orders';
+    protected $primaryKey = 'OrderID';
+    public $timestamps = true;
+}

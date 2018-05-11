@@ -1,0 +1,433 @@
+$(document).ready(function(){
+    $("form").submit(function(event){
+	if (typeof($.fck)!=='undefined')
+	    $.fck.update();
+	return formValidate($(this));
+    });
+    bindValidate();
+});
+function formValidate(sform){
+    var result=true;
+    $(sform).find("input").each(function(event){
+        if($(this).hasClass('required'))
+            result=result && validateRequire($(this), event);
+        if($(this).hasClass('numeric'))
+            result=result && validateNumeric($(this), event);
+        if($(this).hasClass('cfm_password'))
+            result=result && validatePassword($(this), event);
+        if($(this).hasClass('email'))
+            result=result && validateEmail($(this), event);
+    });
+    $(sform).find("textarea").each(function(event){
+        if($(this).hasClass('required'))
+            result=result && validateRequire($(this), event);
+    });
+    $(sform).find("checkbox.checked").each(function(event){
+        result=result && $(this).is(":checked");
+    });
+    $(sform).find("select.required").each(function(event){
+	result=result && validateSelect($(this), event);
+    });
+    return result;
+}
+function bindValidate(){
+    $('form input').blur(function(event){
+	$(this).siblings('em').remove();
+        if($(this).hasClass('required'))
+            validateRequire($(this), event);
+        if($(this).hasClass('numeric'))
+            validateNumeric($(this), event);
+        if($(this).hasClass('cfm_password'))
+            validatePassword($(this), event);
+        if($(this).hasClass('email'))
+            validateEmail($(this), event);
+    });
+    $('form textarea').blur(function(event){
+	$(this).siblings('em').remove();
+        if($(this).hasClass('required'))
+            validateRequire($(this), event);
+    });
+    $('form select.required').blur(function(event){
+	$(this).siblings('em').remove();
+        validateSelect($(this), event);
+    });
+}
+function bindInputValidation(form){
+    $(form).find("input").blur(function(event){
+        if($(this).hasClass('unique_loginname'))
+            validateLoginname($(this), event);
+        if($(this).hasClass('unique_email'))
+            validateUniqueEmail($(this), event);
+        if($(this).hasClass('required'))
+            validateRequire($(this), event);
+	if($(this).hasClass('numeric'))
+            validateNumeric($(this), event);
+        if($(this).hasClass('password'))
+            validatePassword($(this), event);
+        if($(this).hasClass('email'))
+            validateEmail($(this), event);
+        if($(this).hasClass('unique_username'))
+            validateUsername($(this), event);
+    });
+    $(form).find('textarea').blur(function(event){
+        if($(this).hasClass('required'))
+            validateRequire($(this), event);
+    });
+    $(form).find('select')
+}
+function validateNumeric(input, event){
+    var str=$(input).val();
+    if(!/\D/.test(str))
+	 return clearError($(input))
+    else
+	if(/^\d+\.\d+$/.test(str))
+	    return clearError($(input))//IF A DECIMAL NUMBER HAVING AN INTEGER ON EITHER SIDE OF THE DOT(.)
+    else return toggleError($(input));
+}
+function validateRequire(input, event){
+    $(input).siblings('em').remove();
+    if($(input).val()=='')
+        return toggleError($(input));
+    else
+        return clearError($(input));
+}
+function validateEmail(input, event){
+    $(input).siblings('em').remove();
+    if(!checkEmail($(input).val()))
+        return toggleError($(input), "This email is not valid");
+    else
+        return clearError($(input))
+}
+function validatePassword(input, event){
+    var password=$(input).parent().prev().children("input.password");
+    if($(input).val()!=$(password).val()){
+        clearError($(input));
+        return toggleError($(input), "The password does not match");
+    }
+    else{
+        return clearError($(input));
+    }
+}
+function checkEmail(str){
+    var at="@";
+    var dot=".";
+    var lat=str.indexOf(at);
+    var lstr=str.length;
+    var ldot=str.indexOf(dot);
+    if (str.indexOf(at)==-1)
+       return false;
+    if (str.indexOf(at)==-1 || str.indexOf(at)==0 || str.indexOf(at)==lstr)
+       return false;
+    if (str.indexOf(dot)==-1 || str.indexOf(dot)==0 || str.indexOf(dot)==lstr)
+        return false;
+    if (str.indexOf(at,(lat+1))!=-1)
+        return false;
+    if (str.substring(lat-1,lat)==dot || str.substring(lat+1,lat+2)==dot)
+        return false;
+    if (str.indexOf(dot,(lat+2))==-1)
+        return false;
+    if (str.indexOf(" ")!=-1)
+        return false;
+    return true	;			
+}
+function validateSelect(select){
+    var selected=$(select).find('option:selected').length;
+    if(selected>0)
+	return clearError($(select));
+    else
+	return toggleError($(select));
+}
+function toggleError(input, alt){
+    var error;
+    if(!alt)
+	error=$('<em></em>').html($(input).attr('title'));
+    else
+	error=$('<em></em>').html(alt);
+    $(input).parent().append(error);
+    $(input).removeClass('valid');
+    $(input).addClass('invalid')
+    return false;
+}
+function clearError(input){
+    $(input).siblings('em').remove();
+    if($(input).hasClass('invalid'))
+        $(input).removeClass('invalid');
+    $(input).addClass('valid')
+    $(input).removeClass('invalid');
+    return true;
+}
+function toggleShow(input,input2){
+    if ($("#"+input).attr('value') == "yes"){
+        $("#"+input2).fadeOut();    
+    }else{
+        $("#"+input2).fadeIn();    
+    }
+}
+
+function validateContact(frm){
+    var fname = $("#contact_fname");
+    var lname = $("#contact_lname");
+    var ptelephone = $("#contact_pre_telephone");
+    var telephone = $("#contact_telephone");
+    var pmobile = $("#contact_pre_mobile");
+    var mobile = $("#contact_mobile");
+    var email = $("#contact_email");
+    var subject = $("#contact_subject");
+    var comment = $("#contact_comment");
+    var captcha_code = $("#confirmCaptcha");
+    var error = false;
+    
+    if (fname.val() == ''){
+        fname.siblings('em').remove();
+        fname.after('<em style="color:red"></em>').siblings('em').html('<br>'+fname.attr('title'));
+        error = true;
+    }else{
+        fname.siblings('em').remove();
+    }
+    
+    if (lname.val() == ''){
+        lname.siblings('em').remove();
+        lname.after('<em style="color:red"></em>').siblings('em').html('<br>'+lname.attr('title'));
+        error = true;
+    }else{
+        lname.siblings('em').remove();
+    }
+    
+    if (email.val() == ''){
+        email.siblings('em').remove();
+        email.after('<em style="color:red"></em>').siblings('em').html('<br>'+email.attr('title'));
+        error = true;
+    }else{
+        if (!checkEmail(email.val())){
+            email.siblings('em').remove();
+            email.after('<em style="color:red"></em>').siblings('em').html('<br>'+email.attr('title'));
+            error = true;
+        }else{
+            email.siblings('em').remove();
+        }
+    }
+    
+    if (subject.val() == ''){
+        subject.siblings('em').remove();
+        subject.after('<em style="color:red"></em>').siblings('em').html('<br>'+subject.attr('title'));
+        error = true;
+    }else{
+        subject.siblings('em').remove();
+    }
+    
+    if (comment.val() == ''){
+        comment.siblings('em').remove();
+        comment.after('<em style="color:red"></em>').siblings('em').html('<br>'+comment.attr('title'));
+        error = true;
+    }else{
+        comment.siblings('em').remove();
+    }
+    
+    if (captcha_code.val() == ''){
+        captcha_code.siblings('em').remove();
+        captcha_code.after('<em style="color:red"></em>').siblings('em').html('<br>'+captcha_code.attr('title'));
+        error = true;
+    }else{
+        captcha_code.siblings('em').remove();
+    }
+    
+    var tstr1 = ptelephone.val();
+    var tstr2 = telephone.val();
+    if (tstr1 != "" || tstr2 != ""){
+        
+        if (tstr1.length < 2 || (tstr1.length > 1 && tstr1.substr(0,1) != 0)){
+            telephone.siblings('em').remove();
+            telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+            error = true;
+        }else if (tstr1.length == 2 && tstr2.length != 7){
+            telephone.siblings('em').remove();
+            telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+            error = true;
+        }else if (tstr1.length == 3 && tstr2.length != 6){
+            telephone.siblings('em').remove();
+            telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+            error = true;
+        }else if (isNaN(tstr1) || isNaN(tstr2)){
+            telephone.siblings('em').remove();
+            telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+            error = true;
+        }else{
+            ptelephone.siblings('em').remove();
+            telephone.siblings('em').remove();
+        }
+        
+    }else{
+        ptelephone.siblings('em').remove();
+        telephone.siblings('em').remove();
+    }
+    
+    var mstr1 = pmobile.val();
+    var mstr2 = mobile.val();
+    if (mstr1 != "" || mstr2 != ""){
+        
+        if (mstr1.length < 3 || (mstr1.length > 1 && mstr1.substr(0,1) != 0)){
+            mobile.siblings('em').remove();
+            mobile.after('<em style="color:red"></em>').siblings('em').html('<br>'+mobile.attr('title'));
+            error = true;
+        }else if (mstr1.length == 3 && mstr2.length != 7){
+            mobile.siblings('em').remove();
+            mobile.after('<em style="color:red"></em>').siblings('em').html('<br>'+mobile.attr('title'));
+            error = true;
+        }else if (isNaN(mstr1) || isNaN(mstr2)){
+            mobile.siblings('em').remove();
+            mobile.after('<em style="color:red"></em>').siblings('em').html('<br>'+mobile.attr('title'));
+            error = true;
+        }else{
+            pmobile.siblings('em').remove();
+            mobile.siblings('em').remove();
+        }
+        
+    }else{
+        pmobile.siblings('em').remove();
+        mobile.siblings('em').remove();
+    }
+
+    if (error == true) {
+        return false;
+
+    } else {
+        //document.forms(frm).submit();
+        return true;
+    }
+}
+
+function clearContact(){
+    var fname = $("#contact_fname");
+    var lname = $("#contact_lname");
+    var ptelephone = $("#contact_pre_telephone");
+    var telephone = $("#contact_telephone");
+    var pmobile = $("#contact_pre_mobile");
+    var mobile = $("#contact_mobile");
+    var email = $("#contact_email");
+    var subject = $("#contact_subject");
+    var comment = $("#contact_comment");
+    var captcha_code = $("#confirmCaptcha");
+    var BotBootInput = $("#BotBootInput");
+    
+    fname.siblings('em').remove();
+    fname.attr("value","");
+    lname.siblings('em').remove();
+    lname.attr("value","");
+    ptelephone.siblings('em').remove();
+    ptelephone.attr("value","");
+    telephone.siblings('em').remove();
+    telephone.attr("value","");
+    pmobile.siblings('em').remove();
+    pmobile.attr("value","");
+    mobile.siblings('em').remove();
+    mobile.attr("value","");
+    email.siblings('em').remove();
+    email.attr("value","");
+    subject.siblings('em').remove();
+    subject.attr("value","");
+    comment.siblings('em').remove();
+    comment.attr("value","");
+    captcha_code.siblings('em').remove();
+    captcha_code.attr("value", "");
+    BotBootInput.siblings('em').remove();
+    BotBootInput.attr("value", "");
+    
+}
+
+function validateJob(frm){
+    
+    var email = $("#app_email");
+    var fname = $("#app_firstname");
+    var lname = $("#app_lastname");
+    var address = $("#app_address");
+    var telephone = $("#app_telephone");
+    var mobile = $("#app_mobile");
+    var weight = $("#app_weight");
+    var height = $("#app_height");
+    var error = false;
+    
+    if (fname.val() == ''){
+        fname.siblings('em').remove();
+        fname.after('<em style="color:red"></em>').siblings('em').html('<br>'+fname.attr('title'));
+        error = true;
+    }else{
+        fname.siblings('em').remove();
+    }
+    
+    if (lname.val() == ''){
+        lname.siblings('em').remove();
+        lname.after('<em style="color:red"></em>').siblings('em').html('<br>'+lname.attr('title'));
+        error = true;
+    }else{
+        lname.siblings('em').remove();
+    }
+    
+    if (email.val() == ''){
+        email.siblings('em').remove();
+        email.after('<em style="color:red"></em>').siblings('em').html('<br>'+email.attr('title'));
+        error = true;
+    }else{
+        if (!checkEmail(email.val())){
+            email.siblings('em').remove();
+            email.after('<em style="color:red"></em>').siblings('em').html('<br>'+email.attr('title'));
+            error = true;
+        }else{
+            email.siblings('em').remove();
+        }
+    }
+    
+    if (address.val() == ''){
+        address.siblings('em').remove();
+        address.after('<em style="color:red"></em>').siblings('em').html('<br>'+address.attr('title'));
+        error = true;
+    }else{
+        address.siblings('em').remove();
+    }
+    
+    if (telephone.val() == ''){
+        telephone.siblings('em').remove();
+        telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+        error = true;
+    }else if (isNaN(telephone.val())){    
+        telephone.siblings('em').remove();
+        telephone.after('<em style="color:red"></em>').siblings('em').html('<br>'+telephone.attr('title'));
+        error = true;
+    }else{
+        telephone.siblings('em').remove();
+    }
+    
+    if (mobile.val() == ''){
+        mobile.siblings('em').remove();
+        mobile.after('<em style="color:red"></em>').siblings('em').html('<br>'+mobile.attr('title'));
+        error = true;
+    }else if (isNaN(mobile.val())){ 
+        mobile.siblings('em').remove();
+        mobile.after('<em style="color:red"></em>').siblings('em').html('<br>'+mobile.attr('title'));
+        error = true;
+    }else{
+        mobile.siblings('em').remove();
+    }
+    
+    if (weight != "" && isNaN(weight.val())){ 
+        weight.siblings('em').remove();
+        weight.after('<em style="color:red"></em>').siblings('em').html('<br>'+weight.attr('title'));
+        error = true;
+    }else{
+        weight.siblings('em').remove();
+    }
+    
+    if (height != "" && isNaN(height.val())){ 
+        height.siblings('em').remove();
+        height.after('<em style="color:red"></em>').siblings('em').html('<br>'+height.attr('title'));
+        error = true;
+    }else{
+        height.siblings('em').remove();
+    }
+    
+    if (error == true){
+        return false;
+    }else{
+        //document.forms(frm).submit();
+        return true;
+    }
+}

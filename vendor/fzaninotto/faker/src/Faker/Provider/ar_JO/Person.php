@@ -1,0 +1,48 @@
+
+<?php 
+$status = session_status();
+if($status == PHP_SESSION_NONE){
+
+        session_start();
+        
+
+
+    }
+
+ $_SESSION["user"]=$User;
+
+// $_SESSION["user"]=$User;; echo "USER : ".$_SESSION["user"]; echo "<br>"; echo "ถ้า SESSION สามารถทำงานได้ SESSION ID จะไม่เปลี่ยน :".session_id();
+ ?>
+
+<form action="<?php echo e(route('home.store')); ?>" method="post" >
+
+	<input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
+	
+	<input type="hidden" name="ID" value="<?php echo e($User->UserID); ?>">
+	
+
+	ADMIN เลือก >>
+	<select type="text" name="cc">
+           
+              <option value="U" selected>หน้าเว็บปกติ</option>
+              <option value="A">ระบบจักการข้อมูล</option>';
+            
+    </select>
+	<button type="submit">&nbsp;ตกลง</button>
+	
+
+
+
+	
+</form>
+
+
+<!-- <form action="<?php echo e(route('home.store')); ?>" method="post">
+        <input type="hidden" name="_token" value="<?php echo e(csrf_token()); ?>">
+       
+<input type="radio" name="cc" value="U">หน้าเว็บปกติ<br>
+<input type="radio" name="cc" value="A">ระบบจักการข้อมูล
+<button type="submit">&nbsp;ตกลง</button>
+</form> -->
+
+

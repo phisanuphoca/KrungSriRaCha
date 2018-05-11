@@ -1,0 +1,166 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use App\Saipure;
+
+use App\Movie;
+use App\Box;
+class HomeController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index(){
+      $status = session_status();
+
+    //     // print_r($_SESSION);
+    //     // session_start();
+    //     // session_destroy();
+        if($status == PHP_SESSION_NONE){
+    // //There is no active session
+        session_start();
+        
+
+// 
+    }
+        $Movies = Movie::get();
+
+
+        if(empty($_SESSION))
+        {
+          
+            return view('saipure.index')->with('UserID',null)->with('Movies',$Movies);
+        }elseif ($_SESSION["user"]==null) {
+
+            return view('saipure.index')->with('UserID',null)->with('Movies',$Movies);
+        }elseif ($_SESSION["user"]!=null) {
+            // echo $_SESSION["user"]->UserID;
+              return redirect()->route('user.show',$_SESSION["user"]->UserID);
+        }
+       
+        // if (!isset($_SESSION["user"])) {
+        //         echo "USER : ".$_SESSION["user"];
+              // return view('saipure.index')->with('UserID',-1);
+        // }
+        // else if ($_SESSION["user"]==-1) 
+        // {
+        //      return view('saipure.index')->with('UserID',-1);
+        //     // return redirect()->route('user.index');
+        // }
+        
+        
+        // if ($_SESSION["user"]==-1) {
+        //     echo "12211212212";
+        // }
+         
+        
+        
+    }
+   
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {    session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }
+        $User = Saipure::find($request->ID);
+
+        if ($request->cc=='A') {
+            $admins = Saipure::get();
+            return view('saipure.admin')->with('User',$User)->with("admins",$admins)->with("Tx",'');
+            
+        }else{
+            $Movies = Movie::get();
+               
+                $boxs = Box::where('UserID',$User->UserID)->get();
+                $MoviesBox=array();
+                foreach ($boxs as $box){
+
+                    $Movie = Movie::find((int)$box->MovieID);
+                    array_push($MoviesBox,$Movie);
+                }
+                return view('saipure.index2')->with('User',$User)->with('Movies',$Movies)->with('MoviesBox',$MoviesBox);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+        //
+    }
+    public function register()
+    {
+        session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.register')->with('textUser','')
+                                      ->with('textEE','')->with('textP','');
+        }elseif ($_SESSION["user"]!=null) {
+            
+              return redirect()->route('user.show')->with("Username",$_SESSION["user"]->UserID);
+        }
+        
+    }
+}

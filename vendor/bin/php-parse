@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<!-- saved from url=(0070)http://www.sfcinemacity.com/bannerHTML/sponsors/bottom-left/index.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta charset="utf-8">
+
+<title>fire_index_Showtime</title>
+
+
+
+
+
+
+
+    <style>
+
+
+
+      body {
+
+
+
+        margin: 0px;
+
+
+
+        padding: 0px;
+
+
+
+        cursor:hand;
+
+
+
+      }
+
+
+
+      iframe{
+
+
+
+        margin: 0px;
+
+
+
+        border: 0px;
+
+
+
+      }
+
+
+
+      #result{
+
+
+
+        margin: 0px;
+
+
+
+        border: 0px;
+
+
+
+        width: 270px;
+
+
+
+        height: 120px;
+
+
+
+      }
+
+
+
+    </style>
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="jquery.min.js"></script>
+
+
+
+<script type="text/javascript">
+
+
+
+
+
+
+
+
+
+
+
+jQuery.noConflict();  
+
+
+
+
+
+
+
+(function($) {
+
+
+
+   $(document).ready(function() {
+
+
+
+
+
+
+
+
+
+
+
+      if($.browser.mozilla){
+
+
+
+        jQuery("#result").html("<iframe width='270px' height='120px' src='swf/swfbanner.html' frameborder='0' allowfullscreen></iframe>");
+
+
+
+      }else if($.browser.msie){
+
+
+
+      
+
+
+
+        jQuery("#result").html("<iframe width='270px' height='120px' src='swf/swfbanner.html' frameborder='0' allowfullscreen></iframe>");
+
+
+
+      } else if($.browser.opera){
+
+
+
+      
+
+
+
+           jQuery("#result").html("<iframe width='100%' height='100%' src='html5/canvasbanner.html' frameborder='0' allowfullscreen border='0' scrolling='no'  ></iframe>");
+
+
+
+      }else if($.browser.safari){
+
+
+
+      
+
+
+
+           jQuery("#result").html("<iframe width='100%' height='100%' src='html5/canvasbanner.html' frameborder='0' allowfullscreen border='0' scrolling='no'  ></iframe>");
+
+
+
+      }
+
+
+
+      else
+
+
+
+      {
+
+
+
+      
+
+
+
+           jQuery("#result").html("<iframe width='100%' height='100%' src='html5/canvasbanner.html' frameborder='0' allowfullscreen border='0' scrolling='no'  ></iframe>");
+
+
+
+      }
+
+
+
+
+
+
+
+    });
+
+
+
+})(jQuery);  
+
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+</head>
+
+
+
+ <body style="background-color:#D4D4D4;margin:0px">
+
+
+
+ <div id="result"><iframe width="100%" height="100%" src="canvasbanner(2).html" frameborder="0" allowfullscreen="" border="0" scrolling="no" __idm_frm__="12"></iframe></div>
+
+
+
+ 
+
+
+
+</body></html>

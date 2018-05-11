@@ -1,0 +1,145 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+
+use App\Http\Requests;
+use App\Http\Controllers\Controller;
+use App\Saipure;
+use App\Movie;
+class AdmimController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {   session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }elseif ($_SESSION["user"]->Status == "ADMIN") {
+            $aa = $_SESSION["user"]->UserID;
+            $User = Saipure::find($aa);
+            $admins = Saipure::get();
+            return view('saipure.admin')->with('User',$User)->with("admins",$admins)->with("Tx",'');
+        }else{
+            return redirect()->route('user.show',$_SESSION["user"]->UserID);
+        }
+
+        
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        session_start();
+        $aa = $_SESSION["user"]->UserID;
+        $User = Saipure::find($aa);
+        $admins = Saipure::get();
+        $store = new Movie;
+        if ($request->input('p')=="") {
+            return view('saipure.admin')->with('User',$User)->with("admins",$admins)->with("Tx",'กรอกข้อมูลให้ครบ');
+        }
+           $m =  Movie::where('Picture',$request->input('p'))->first();
+        if ($m!=NULL) {
+            return view('saipure.admin')->with('User',$User)->with("admins",$admins)->with("Tx",'กรอกข้อมูลที่อยู่รูปซ้ำ');
+        }
+        $store->Price = $request->input('point');
+        $store->Picture = $request->input('p');
+        $store->save();
+        
+        return view('saipure.admin')->with('User',$User)->with("admins",$admins)->with("Tx",'เพิ่มที่อยู่รูป : '.$request->input('point').'   ราคา '.$request->input('p').' เรียบร้อย !!');
+
+    }
+    public function check2(Request $request)
+    {
+        
+
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+       
+    }
+    
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        session_start();
+        if ($_SESSION["user"]==null) {
+
+            return view('saipure.login')->with('tt','');
+        }
+        $User = Saipure::find($id);
+        $admin = Saipure::where('UserID',$id)->first();
+        return view('saipure.editAdmin')->with('User',$User)->with('admin',$admin);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id)
+    {   
+        $update = Saipure::find($id);
+        
+        $update->Password = $request->input('Password');
+        $update->Name = $request->input('Name');
+        $update->email = $request->input('email');
+        $update->Point = $request->input('Point');
+        $update->Status = $request->input('Status');
+
+
+        $update->save();
+
+        return redirect()->route('admin.index');
+    }
+
+
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy($id)
+    {
+         $destroy = Saipure::where('UserID',$id)->delete();
+
+        return redirect()->route('admin.index');
+    }
+}

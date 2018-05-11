@@ -1,0 +1,566 @@
+var base_url='/index.php/';
+var loading='<img src="/images/loading.gif" alt="loading"><p>loading...</p>';
+$(document).ready(function(){
+    // external links open in a new window
+    //$("a:not([href*=http://sfcinema/])").not("[href^=#]").not(".internal").click(function(ev){
+    //$("a:not([href*=http://sfcinema.flexmedia.co.th/])").not("[href^=#]").not(".internal").click(function(ev){
+    $("a:not([href*=http://www.sfcinemacity.com/])").not("[href^=#]").not(".internal").click(function(ev){
+	window.open($(this).attr('href'));
+	return false;
+    });
+    $("a.external").click(function(ev){
+	window.open($(this).attr('href'));
+	return false;
+    });
+    $("a.cfm").click(function(ev){
+	if(!confirm($(this).attr('title')))
+	    ev.preventDefault();
+    })
+    
+    // bind show and hide of navigation menu when hovering
+    $("#navigation li").bind('mouseenter', function(){
+	$(this).children('ul').fadeIn();
+    })
+    .bind('mouseleave', function(){
+	$(this).children('ul').fadeOut();
+    });
+    
+    // expand/close content box on the sub-sidebar (lower-left)
+    $('.block #expanded-content').show();
+    $(".expandable a").click(function(ev){
+	ev.preventDefault();
+	var parent=$(this).parent().parent();
+	//$(parent).parent().siblings().children('.head-select').removeClass('head-select');
+	if($(parent).hasClass('head-select'))
+	    $(parent).removeClass('head-select').next().slideDown('slow');
+	else
+	    $(parent).addClass('head-select').next().slideUp('slow');
+    });
+    
+    
+    // load cinema list or movie list when clicking on each one @ showtimes box
+    $("#timetable a").click(function(ev){
+	ev.preventDefault();
+	var trigger=$(this);
+	var popup=$('.popup');
+	var offset=$(trigger).offset();
+	$(popup).html('<div class="loading">'+loading+'</div>')
+	    .css('top', offset.top+25+'px')
+	    .fadeIn('slow');
+	$.get($(this).attr('href'), {ccode:$("#ccode").val(), mcode:$("#mcode").val()}, function(data){
+	    $(popup).html(data);
+        
+                
+	    // bind show/hide to the movie legend tap
+	    $("#movie_legends h5 a").click(function(ev){
+		ev.preventDefault();
+		var target=$("#movie_legends dl");
+		if($(target).is(":visible"))
+		    $(target).slideUp();
+		else
+		    $(target).slideDown();
+	    });
+		
+		
+            $("#j_showtime_t").click(function(ev){
+				ev.preventDefault();
+               $("#movies-list_t").show(); 
+			   $("#movies-list_b").hide();
+				 $("#movies-list_r").hide();
+			  	 $("#j_showtime_t").addClass("cursor");
+ 				 $("#j_showtime_b").removeClass("cursor");
+				 $("#j_showtime_r").removeClass("cursor");
+              }); 
+       
+         
+            $("#j_showtime_b").click(function(ev){
+				ev.preventDefault();
+			   	$("#movies-list_t").hide();
+         	     $("#movies-list_b").show();
+				 $("#movies-list_r").hide();
+				 $("#j_showtime_b").addClass("cursor"); 
+			     $("#j_showtime_t").removeClass("cursor");
+				 $("#j_showtime_r").removeClass("cursor");
+              }); 
+     
+		
+            $("#j_showtime_r").click(function(ev){
+				ev.preventDefault();
+			   	$("#movies-list_t").hide();
+         	     $("#movies-list_b").hide();
+				 $("#movies-list_r").show();
+				 $("#j_showtime_r").addClass("cursor"); 
+			       $("#j_showtime_t").removeClass("cursor");
+				  $("#j_showtime_b").removeClass("cursor");
+              }); 
+     
+	    
+	    // bind action to each movie link (put movie name and id in to the form)
+	    $('#movies-list ol a').click(function(ev){
+		ev.preventDefault();
+		$("#mcode").val($(this).attr('title'));
+		$("#mlink").html($(this).html());
+		$(popup).fadeOut('slow', function(){$(popup).html('');});
+	    });
+	    
+	    // bind action to each cinema location (put cinema name and id in to the form)
+	    $('#location_list a').click(function(ev){
+		ev.preventDefault();
+		$("#ccode").val($(this).attr('ccode'));
+		$("#clink").html($(this).html());
+		$(popup).fadeOut('slow', function(){$(popup).html('');});
+	    });
+	    $(popup).draggable();
+	    
+	    // bind close popup link
+	    $(popup).find('.close').click(function(ev){
+		ev.preventDefault();
+		$(popup).fadeOut('slow', function(){$(popup).html('');});
+	    });
+	});
+    });
+    
+    bind_button_action();
+    bind_cinema_location()
+    bind_business_location()
+    bind_cinema_gallery();
+    bind_business_gallery();
+    bind_calendar();
+    bind_movie_gallery();
+    
+    $('.big_calendar>li .evpopup').each(function() {
+	$(this).css('zIndex', 10000);
+    });
+    $(".blkbtn").hover(
+	function(){
+	    $(this).addClass('hover');
+	},
+	function(){
+	   $(this).removeClass('hover');
+	}
+    );
+    $("#loggingin").click(function(ev){
+	ev.preventDefault();
+	var target=$("#q_login");
+	if($(target).is(':visible'))
+	    $(target).slideUp('slow');
+	else
+	    $(target).slideDown('slow');
+    });
+    $(".minimize").click(function(ev){
+	ev.preventDefault();
+	var target=$(this).parent().parent();
+	if($(target).is(':visible'))
+	    $(target).slideUp('slow');
+	else
+	    $(target).slideDown('slow');
+    })
+    $("#showprofile").click(function(ev){
+	ev.preventDefault();
+	var target=$("#q_profile");
+	if($(target).is(':visible'))
+	    $(target).slideUp('slow');
+	else
+	    $(target).slideDown('slow');
+    });
+    $("#search_trigger").click(function(ev){
+	ev.preventDefault();
+	$("#tracking_log").slideUp('slow');
+	var target=$("#search_form");
+	if($(target).is(':visible'))
+	    $(target).slideUp('slow');
+	else
+	    $(target).slideDown('slow');
+    })
+    $("#member_tracking").click(function(ev){
+	ev.preventDefault();
+	$("#search_form").slideUp('slow');
+	var target=$("#tracking_log");
+	if($(target).is(':visible'))
+	    $(target).slideUp('slow');
+	else
+	    $(target).slideDown('slow');
+    });
+    
+    $("#magnets-bar a").hover(
+	function(){
+	    $(this).next().show();
+	},
+	function(){
+	    $(this).next().hide();
+	}
+    );
+    $("#movie-magnets .yes").click(function(ev){
+	ev.preventDefault();
+	var url=$(this).attr('href');
+	$.post(url, {}, function(data){
+	    window.location = data;
+	});
+    });
+    
+    $("#showtime_reset").click(function(ev){
+	$("#clink").html("Select a location");
+	$("#ccode").val('');
+	$("#mlink").html("Select a movie");
+	$("#mcode").val('');
+	ev.preventDefault();
+    });
+    $(".mag-permission").hover(function(ev){
+	    $(this).siblings(".magnet-info").show();
+	},
+	function(ev){
+	    $(this).siblings(".magnet-info").hide();
+	}
+    ).click(function(ev){
+	ev.preventDefault();
+	$(".permission").hide();
+	var target=$(this).siblings('.permission');
+	$(target).fadeIn('slow');
+    });
+    
+    $(".permission .close").click(function(ev){
+	ev.preventDefault();
+	$(this).parent().fadeOut('slow');
+    });
+    $(".q-expander").click(function(ev){
+	var target=$(this).parent().parent().siblings(".q-expanded");
+	var trigger=this;
+	if($(target).is(":visible")){
+	    $(target).slideUp('slow');
+	    $(trigger).children("span").html("+");
+	}
+	else{
+	    $(target).parent().siblings().children(".q-expanded").slideUp();
+	    $(".q-expander span").html("+");
+	   
+	    $(target).slideDown('slow');
+	    $(trigger).children("span").html("-");
+	}
+    });
+    
+    $(".hover-title").hover(
+	function(){
+	    $(this).children('span').show();
+	},
+	function(){
+	    $(this).children('span').hide();
+	}
+    );
+    
+    $("#contact_pre_telephone").keyup(
+    function(){
+        tel_ln = $(this).val().length;
+        if (tel_ln >= 2){
+            $("#contact_telephone").focus();
+        }
+    }
+    );
+    
+    $("#contact_pre_mobile").keyup(
+    function(){
+        tel_ln = $(this).val().length;
+        if (tel_ln >= 3){
+            $("#contact_mobile").focus();
+        }
+    }
+    );
+    
+});
+
+// calendar action
+function bind_calendar(){
+    // show activity popup on the hovered day
+    $(".highlight a").hover(function(){
+	    $(this).next().show();
+	},
+	function(){
+	    $(this).next().hide();
+	}
+    );
+    // show next/previous month
+    $("#calendar-head .ajax").click(function(ev){
+	ev.preventDefault();
+	$.post($(this).attr('href'), { ajaxRequest: true }, function(data){
+	   $("#subcalendar").html(data);
+	   bind_calendar(); // rebind events
+	}); 
+    });
+}
+
+// show next/previous/page XX of the gallery
+function bind_cinema_gallery(){
+    $("#cinema-gallery ul a").click(function(ev){
+	ev.preventDefault();
+	$("#cinema-image").attr('src', $(this).attr('href'));
+    });
+    $("#cinema-gallery #gpage a").click(function(ev){
+	ev.preventDefault();
+	$.get($(this).attr('href'), {}, function(data){
+	    $("#cinema-gallery").html(data);
+	    bind_cinema_gallery()
+	});
+    });
+}
+
+function bind_business_gallery(){
+    $("#business-gallery ul a").click(function(ev){
+	ev.preventDefault();
+	$("#business-image").attr('src', $(this).attr('href'));
+    });
+    $("#business-gallery #gpage a").click(function(ev){
+	ev.preventDefault();
+	$.get($(this).attr('href'), {}, function(data){
+	    $("#business-gallery").html(data);
+	    bind_business_gallery();
+	});
+    });
+}
+function bind_movie_gallery(){
+    $("#movie-gallery ul a").click(function(ev){
+	ev.preventDefault();
+	$("#movie-gallery-image").attr('src', $(this).attr('href'));
+    });
+    $("#movie-gallery #gpage a").click(function(ev){
+	ev.preventDefault();
+	$.get($(this).attr('href'), {}, function(data){
+	    $("#movie-gallery").html(data);
+	    bind_movie_gallery();
+	});
+    });
+}
+
+function expandAnswer(cat,faq,fall){
+    if (fall > 1){
+        for (i=1;i<=fall;i++){
+            if (i != cat){ 
+                $("li[group='"+i+"']").fadeOut(); 
+            }
+        }    
+    }
+    $("#lifaqs"+cat+faq).slideToggle("slow");
+}
+
+function historyOver(mid){
+    var jmid=$("#"+mid);
+    if ($(jmid).attr('class') != "shadow"){
+        $(jmid).removeClass('normal').addClass('over');      
+    }
+    
+}
+
+function historyOut(mid){
+    var jmid=$("#"+mid);
+    if ($(jmid).attr('class') != "shadow" && $(jmid).attr('class') != "normal"){
+        $(jmid).removeClass('over').addClass('normal');      
+    }
+    
+}
+
+function historySelect(mid,tid,gid,lng){
+    
+    if ($("#"+mid).attr('class') != "shadow"){
+	var target_li=$("li[group!='"+tid+"']");
+        $(target_li).removeClass('shadow').removeClass('over').addClass('normal');       
+        
+	var mtarget=$("#"+mid);
+        $(mtarget).removeClass('normal').removeClass('over').addClass('shadow');  
+        
+	var section=$("#history-section");
+        $(section).html('<center><img src="/./images/loading.gif"></center>');
+        
+        $.post(base_url+lng+'/history/content/'+gid,{id:gid},
+            function(data){
+                var content = data.MData;
+                $(section).html(content.replace(/&amp;/ig,'&'));
+            }
+            ,'json');  
+    }
+    
+}
+
+function newsletter_register(){
+    var email = $("#newsletter_email").attr("value");
+    
+    if (email.toLowerCase() == 'email address'){
+        return false;
+    }
+    var news_error=$("#newsletter_error");
+    var target=$("#expanded-content");
+    $(news_error).css("display","block");
+    if(!checkEmail(email)){
+        $(news_error).html("This email is not valid");
+    }else{
+        $(news_error).html("").css("display","block");
+	
+        $(target).html('<center><img src="/./images/loading.gif"></center>');
+        
+        $.post(base_url+'newsletter/register',{data_email:email},
+            function(data){
+		$(target).html(data.MData);
+	    }
+            ,'json');  
+    }
+}
+
+function newsletter_toggle(eid){
+    
+    var evalue = $("#"+eid).val();
+    
+    if (evalue.toLowerCase() == 'email address'){
+        $("#"+eid).attr('value',"");
+    }else if (evalue.toLowerCase() == ''){
+        $("#"+eid).attr('value',"Email Address");
+    }
+    
+}
+
+function viewJob(jid){
+    $("#table-about-job"+jid).slideToggle("slow"); 
+    //$("div[group!='"+jid+"']").css("display","none");    
+}
+
+function bind_business_location(){
+    $('#business-location a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            text: $(this).parent().siblings(".tooltip2").text(),
+            title: {
+               text: 'Location : ' + $(this).parent().siblings(".tooltip").text(), 
+               button: '' 
+            }
+         },
+         position: {
+            corner: {
+               target: 'bottomMiddle', 
+               tooltip: 'topMiddle'
+            },
+            adjust: {
+               screen: true 
+            }
+         },
+         show: { 
+            when: 'mouseover', 
+            solo: true 
+         },
+         hide: 'mouseout',
+         style: {
+            tip: true, 
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', 
+            width: 500 
+         }
+      })
+   });
+}
+
+function bind_cinema_location(){
+     /* bind location balloon : /cineme + /entertainment */
+    $('#cinema-location a[rel]').each(function()
+   {
+      $(this).qtip(
+      {
+         content: {
+            text: $(this).parent().siblings(".tooltip2").text(),
+            title: {
+               text: 'Location : ' + $(this).parent().siblings(".tooltip").text(), 
+               button: '' 
+            }
+         },
+         position: {
+            corner: {
+               target: 'bottomMiddle', 
+               tooltip: 'topMiddle'
+            },
+            adjust: {
+               screen: true 
+            }
+         },
+         show: { 
+            when: 'mouseover', 
+            solo: true 
+         },
+         hide: 'mouseout',
+         style: {
+            tip: true, 
+            border: {
+               width: 0,
+               radius: 4
+            },
+            name: 'light', 
+            width: 500 
+         }
+      })
+   });
+}
+    
+    function bind_button_action(){
+	$("#newsletter_submit").hover(
+	    function(){
+		$(this).addClass("subscribe_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("subscribe_btn-hover");
+	    }	
+	);
+	$("#contact_submit").hover(
+	    function(){
+		$(this).addClass("contact_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("contact_btn-hover");
+	    }    
+	);
+	$("#contact_cancel").hover(
+	    function(){
+		$(this).addClass("contact2_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("contact2_btn-hover");
+	    }    
+	);
+	$("#nextpage_submit").hover(
+	    function(){
+		$(this).addClass("nextpage_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("nextpage_btn-hover");
+	    }    
+	);
+	$("#backpage_submit").hover(
+	    function(){
+		$(this).addClass("backpage_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("backpage_btn-hover");
+	    }    
+	);
+	$("#applypage_submit").hover(
+	    function(){
+		$(this).addClass("applypage_btn-hover");
+	    },
+	    function(){
+		$(this).removeClass("applypage_btn-hover");
+	    }    
+	);
+	$("#black_button_submit").hover(
+	    function(){
+		$(this).attr('src', "/images/newsletter/sreach-hover.jpg");
+	    },
+	    function(){
+		$(this).attr('src', "/images/newsletter/sreach.jpg");
+	    }
+	);
+	$("#booking_btn").hover(
+	    function(){
+		$(this).attr('src', "/images/booking2.gif");
+	    },
+	    function(){
+		$(this).attr('src', "/images/booking1.gif");
+	    }
+	);
+    }
